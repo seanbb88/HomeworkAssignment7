@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Train Schedule</title>
+    <link rel="stylesheet" type="text/css" href="trains.css">
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+</head>
+
+<body>
+    <div class="train-header">
+        <h1> Train Schedule</h1>
+    </div>
+    <div id="train-output" class="train-output">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Train Name</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Train Start Time</th>
+                    <th scope="col">Frequency (min)</th>
+                    <th scope="col">Minutes Away</th>
+                    <th scope="col">Next Arrival (time)</th>
+                    
+
+                </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+        </table>
+    </div>
+
+
+    <form>
+        <div id="train-input" class="train-input">
+            <label>Train Name</label>
+            <select id="train" name="train">
+                <option value="Blue Line">Blue Line</option>
+                <option value="Red Line">Red Line</option>
+                <option value="Yellow Line" selected>Yellow Line</option>
+                <option value="Green Line">Green Line</option>
+                <option value="Purple Line">Purple Line</option>
+                <option value="Brown Line">Brown Line</option>
+            </select>
+            <br>
+
+            <label for="destination">Destination</label>
+            <input type="text" id="destination" placeholder="Enter your Destination">
+            <br>
+
+            <label for="startTime">Train Start Time</label>
+            <input type="time" value="07:30" id="start" placeholder="Train Start Time">
+            <br>
+
+            <label for="frequency">Train Frequency</label>
+            <input type="number" id="frequency" placeholder="">
+            <br>
+            <button type="submit" id="submit-button">Submit</button>
+        </div>
+    </form>
+
+
+
+    <script>
+        $(document).ready(function () {
+            var config = {
+                apiKey: "AIzaSyDVtjZHTK8lb2NNQuC17NiaZDYpnWctcY0",
+                authDomain: "train-scheduler-67039.firebaseapp.com",
+                databaseURL: "https://train-scheduler-67039.firebaseio.com",
+                projectId: "train-scheduler-67039",
+                storageBucket: "",
+                messagingSenderId: "35169451944"
+            };
+            firebase.initializeApp(config);
+
+            var database = firebase.database();
+
+            $("#submit-button").on("click", function (event) {
+                event.preventDefault();
+
+                database.ref().push({
+                    Train: $("#train").val(),
+                    Destination: $("#destination").val(),
+                    Start: $("#start").val(),
+                    Frequency: $("#frequency").val()
+                })
+
+            })
+            database.ref().on("child_added", function (grabData) {
+                var train = grabData.val().Train;
+                var destination = grabData.val().Destination;
+                var start = grabData.val().Start;
+                var frequency = grabData.val().Frequency;
+
+                var tableRow = $("<tr>")
+                var trainData = $("<td>").text(train).appendTo(tableRow);
+                var destinationData = $("<td>").text(destination).appendTo(tableRow);
+                var nextTrainData = $("<td>").text(start).appendTo(tableRow);
+                var frequencyData = $("<td>").text(frequency).appendTo(tableRow);
+
+                tableRow.appendTo($("#table-body"));
+
+                
+                var format = "hh:mm"
+                var convertedData = moment(start, format);
+                var timeDiff = moment(convertedData).diff(moment(), "minutes");
+                var timeDiffAbs = Math.abs(timeDiff);                  
+                var minutesAway = (timeDiffAbs % frequency); 
+                console.log(minutesAway); 
+                var minutesAwayData = $("<td>").text(minutesAway).appendTo(tableRow); 
+                var currentTime = moment().format('hh:mm');
+
+                var nextTrain = moment().add(minutesAway, 'minutes').calendar() 
+                $("<td>").text(nextTrain).appendTo(tableRow); 
+
+               //console.log( moment().add(minutesAway, 'minutes').calendar()); 
+
+            })
+        })
+
+
+
+
+    </script>
+</body>
+
+</html>

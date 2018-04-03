@@ -1,0 +1,36 @@
+/*header - title */
+.train-header {
+    background-image: url(train.jpg); 
+    height: 163px;
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+}
+h1 {
+    text-align: right; 
+    margin-right: 80px; 
+    line-height: 70px; 
+    color: black; 
+    text-shadow: 1px 1px goldenrod;  
+
+}
+
+.train-output {
+    margin-bottom: 70px; 
+}
+
+.train-input {
+    margin-top: 50px;
+
+}
+
+table {
+    width: 100%;
+}
+
+th {
+    height: 50px;
+}
+
+table, th, td {
+    border: 1px solid black;
+ }
